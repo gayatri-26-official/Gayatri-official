@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Cabin Locator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fb;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+            color: #3498db;
+            font-size: 2em;
+        }
+        #search {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        #search:focus {
+            border-color: #2980b9;
+            box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
+        }
+        #results {
+            margin-top: 20px;
+        }
+        .teacher {
+            padding: 12px;
+            margin-bottom: 15px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+        .teacher:hover {
+            background-color: #dfe6e9;
+        }
+        .cabin {
+            background-color: #2ecc71;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .no-results {
+            color: #7f8c8d;
+            font-style: italic;
+            text-align: center;
+        }
+        /* For mobile responsiveness */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            #search {
+                padding: 10px;
+                font-size: 14px;
+            }
+            .teacher {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Teacher Cabin Locator</h1>
+    <input type="text" id="search" placeholder="Search for a teacher...">
+    <div id="results"></div>
+</div>
+
+<script>
+    // Teacher data
+    const teachers = {
+        "Dr Jithina Jose": "H-204(A)",
+        "Mrs. Sapana Kolambe": "H-204(A)",
+        "Kunal Pawar": "H-204(A)",
+        "Vijay Kumar Mantri": "H-204(A)",
+        "Arati Despande": "H-204B",
+        "Tukaram Kendre": "H-204B",
+        "Pankaj Design": "e302",
+        "Dr Pramod D. Ganjewar": "H206",
+        "Dr Sandeep D. Pande": "H206",
+        "Mr. Nilesh D. Navghare": "H206",
+        "Mr. Santosh Warpe": "H206",
+        "Ms. Bhagyashree Alhat": "H206",
+        "Mrs. Prajakta Ugale": "H206",
+        "Mrs. Shubhangi Kale": "H206",
+        "Mrs. Kavitha S.": "H206",
+        "Dr. Minakshi Vharkate": "H206",
+        "Mrs. Kanchan Dhote": "H206",
+        "Mrs. Mayura Kulkarni": "H206",
+        "Mrs Madhavi Nimkar": "H207A",
+        "Mrs Jayashree Yadannavar": "H207A",
+        "Vinodini Gupta": "H207A",
+        "Mrs. Priyanka Mane": "H210",
+        "Mrs. Diptee Ghusse": "H210",
+        "Ms Padma Nimbhore": "H210",
+        "Dr. Rahul Adhao": "H210",
+        "Ms. Pranali Lokhande": "H210",
+        "Mrs. Anita Shingade": "H210",
+        "Mrs. Laxmi Kale": "H210",
+        "Dr Rajeshwari Goudar": "H211",
+        "Mrs. Pushpmala V. Shinde": "H201",
+        "Dr Shital Kumar Jain": "H201",
+        "Mrs. Jaya Mane": "H201",
+        "Mrs. Chetana Nemade": "H201",
+        "Ms. Sharmila Kharat": "H201",
+        "Dr. Sunita Barve": "H201",
+        "Ms. Neha Hajare": "H201",
+        "Venkatesh Karad": "HBM-02",
+        "Snehal Wagh": "HBM01",
+        "Dr. Swapnil Patare": "HBM01",
+        "Anagh Galagali": "HBM01",
+        "Shalaka Hire": "HBM01",
+        "S D Botre": "HBM-07",
+        "Shyam Shukla": "HBM-08",
+        "Ramesh Ghuge": "HBM-08",
+        "Sitaram Suryawanshi": "HBM-09",
+        "Bhaskar Wabhitkar": "HBM-09",
+        "Khushal Kanade": "HBM-09",
+        "Swapnali Kanade": "HBM-09",
+        "Vijay Muthekar": "HBM-09",
+        "Yogesh Abhang": "HBM13",
+        "Sagar Mushan": "D003",
+        "Mrs Sini Ronson": "D003",
+        "Mrs Asha Abhilash": "D003",
+        "Shaif Hussain": "D003",
+        "Puja Verma": "D003",
+        "Manisha Pansare": "D003",
+        "Satish Gajbhiv": "D003",
+        "Azhar Shaikh": "D003",
+        "Dilip Panchal": "Examination Section",
+        "Arika Kotha": "Examination Section",
+        "Vaishali Wangikar": "D-002",
+        "Nandini Phulpagar": "D-002",
+        "Usha Verma": "D-002",
+        "Shridhar Khandekar": "D-306",
+        "Abhishek Patil": "D-301A",
+        "Ajit Tapkir": "D-301A",
+        "Vishwas Sawant": "D-302A",
+        "Satish Kabra": "D-204",
+        "Omkesh Karad": "PHYSICS LAB",
+        "Parnavi Sankhla": "PHYSICS LAB",
+        "Mr. Atul Patil": "Library",
+        "Rajashri Kakitkar": "Library",
+        "Sunanda Phulari": "Library",
+        "Sanjay Dahiwarkar": "Library",
+        "Shital Kharat": "H-006",
+        "Abhijeet Malge": "H-006",
+        "Muniyappan N": "H001A",
+        "Vishal Bhosale": "H005",
+        "Amol Asalekar": "H005",
+        "Prashant Jikar": "H005",
+        "Archana Mane": "H012",
+        "Renu Shastri": "H012",
+        "Mayuri Pokharna": "H007",
+        "Pritam Kalos": "H007",
+        "Vinayak Bhosale": "H007",
+        "Maya Charde": "H009",
+        "Ankit R Nagargoje": "H103",
+        "Nitasha B Chaudhari": "H103",
+        "Bhimgoud Patil": "H102",
+        "Shreekant Patil": "H102",
+        "Prashant Barve": "H106",
+        "Nilesh Totla": "H112",
+        "Mahesh Joshi": "H112",
+        "Sudesh Powar": "H112",
+        "Venugopal Kulkarni": "H112",
+        "A.G Kamble": "H107B",
+        "Amol Kolhe": "H108",
+        "Yogesh Maske": "H108",
+        "Sanjay Arsole": "H304Ab",
+        "Prajakta Ugale": "H304Ab",
+        "Pramod Dharmadhikari": "H305",
+        "Sandeep Shirvale": "H305",
+        "Navnath Kale": "H305",
+        "Pranav Shriram": "H305",
+        "Avinash Kulkarni": "H306D",
+        "Kanchan Dhote": "H306D",
+        "Chaitanya Patil": "H311",
+        "Chaitanya Bhosale": "H311",
+        "Vaibhav Rewaskar": "H311",
+        "Amar More": "H311",
+        "Manish Giri": "H311",
+        "Vijay Kumar Mantri": "H310",
+        "Avinash Kulkarni": "H310",
+        "Laxmi Kale": "H306B",
+        "Suraj Kunjir": "H306B",
+        "Sandeep Shevale": "A001",
+        "Suyogkumar Taralkar": "A001",
+        "Sudhir Gandhi": "A001",
+        "Vijaykumar Tarange": "A001",
+        "Dilip Chavan": "A002",
+        "Parag Sutar": "A002",
+        "Mayurkumar Patil": "A002",
+        "Ashwathy M.A.": "A003",
+        "Ashitosh Chavan": "A003",
+        "Vaishali Katkar": "A003",
+        "Vaibhav Gijare": "A003",
+        "Amol Kapse": "A005",
+        "Sunil Dewalkar": "A005",
+        "PR Kulkarni": "A008",
+        "Savita Pawar": "A012",
+        "Gajanan Vyavhare": "A012",
+        "Dattatraya Jagdale": "A012",
+        "Vrushal Waghmare": "A012",
+        "Kalpana Pawse": "A012",
+        "Vivekananda Joshi": "A014",
+        "Ashutosh Chavan": "A014"
+    };
+
+    // Search functionality
+    const searchInput = document.getElementById('search');
+    const resultsDiv = document.getElementById('results');
+
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        resultsDiv.innerHTML = '';
+
+        if (searchTerm.length === 0) {
+            return;
+        }
+
+        const matches = Object.keys(teachers).filter(name => 
+            name.toLowerCase().includes(searchTerm)
+        );
+
+        if (matches.length === 0) {
+            resultsDiv.innerHTML = '<div class="no-results">No teachers found matching your search.</div>';
+            return;
+        }
+
+        matches.forEach(name => {
+            const div = document.createElement('div');
+            div.className = 'teacher';
+            div.innerHTML = `
+                ${name} <span class="cabin">${teachers[name]}</span>
+            `;
+            resultsDiv.appendChild(div);
+        });
+    });
+</script>
+
+</body>
+</html>
